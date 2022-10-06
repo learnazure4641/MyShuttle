@@ -1,0 +1,50 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: BuildMaven
+    jobs:
+    - job: BuildMaven
+      steps:
+      - task: JFrogMaven@1
+        inputs:
+          mavenPomFile: 'pom.xml'
+          goals: 'install'
+          artifactoryResolverService: 'artifactory'
+          targetResolveReleaseRepo: 'libs-release'
+          targetResolveSnapshotRepo: 'libs-snapshot'
+          artifactoryDeployService: 'artifactory'
+          targetDeployReleaseRepo: 'libs-snapshot-local'
+          targetDeploySnapshotRepo: 'libs-snapshot-local'
+          collectBuildInfo: true
+          buildName: '$(Build.DefinitionName)'
+          buildNumber: '$(Build.BuildNumber)'
+  - stage: CollectBUildInfo
+    jobs:
+    - job: collectInfo
+      steps:
+      - task: JFrogPublishBuildInfo@1
+        inputs:
+          artifactoryConnection: 'artifactory'
+          buildName: '$(Build.DefinitionName)'
+          buildNumber: '$(Build.BuildNumber)'
+    - job: CopyandPublishsql
+      steps:
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(agent.builddirectory)'
+          Contents: 'CreateMYSQLDB.sql'
+          TargetFolder: '$(build.artifactstagingdirectory)'
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'deploy'
+          publishLocation: 'Container'
