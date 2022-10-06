@@ -35,7 +35,7 @@ stages:
             {
               "files": [
                 {
-                  "pattern": "$(Build.SourcesDirectory)/target/*.war",
+                  "pattern": "$(Build.SourcesDirectory)/target/*.war", "$(Build.SourcesDirectory)/CreateMYSQLDB.sql",
                   "target": "libs-snapshot-local"
                 }
               ]
@@ -45,24 +45,24 @@ stages:
           buildNumber: '$(Build.BuildNumber)'
           failNoOp: true
           insecureTls: true
-      - task: JFrogGenericArtifacts@1
-        inputs:
-          command: 'Upload'
-          connection: 'artifactory'
-          specSource: 'taskConfiguration'
-          fileSpec: |
-            {
-              "files": [
-                {
-                  "pattern":  $(Build.SourcesDirectory)/CreateMYSQLDB.sql",
-                  "target": "libs-snapshot-local"
-                }
-              ]
-            }
-          collectBuildInfo: true
-          buildName: '$(Build.DefinitionName)'
-          buildNumber: '$(Build.BuildNumber)'
-          failNoOp: true
+      # - task: JFrogGenericArtifacts@1
+      #   inputs:
+      #     command: 'Upload'
+      #     connection: 'artifactory'
+      #     specSource: 'taskConfiguration'
+      #     fileSpec: |
+      #       {
+      #         "files": [
+      #           {
+      #             "pattern":  "$(Build.SourcesDirectory)/CreateMYSQLDB.sql",
+      #             "target": "libs-snapshot-local"
+      #           }
+      #         ]
+      #       }
+      #     collectBuildInfo: true
+      #     buildName: '$(Build.DefinitionName)'
+      #     buildNumber: '$(Build.BuildNumber)'
+      #     failNoOp: true
       - task: JFrogPublishBuildInfo@1
         inputs:
           artifactoryConnection: 'artifactory'
