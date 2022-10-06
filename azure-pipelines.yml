@@ -26,7 +26,25 @@ stages:
           mavenAuthenticateFeed: false
           effectivePomSkip: false
           sonarQubeRunAnalysis: false
-      
+      - task: JFrogGenericArtifacts@1
+        inputs:
+          command: 'Upload'
+          connection: 'artifactory'
+          specSource: 'taskConfiguration'
+          fileSpec: |
+            {
+              "files": [
+                {
+                  "pattern": "$(Build.SourcesDirectory)/target/*.war",
+                  "target": "libs-snapshot-local"
+                }
+              ]
+            }
+          collectBuildInfo: true
+          buildName: '$(Build.DefinitionName)'
+          buildNumber: '$(Build.BuildNumber)'
+          failNoOp: true
+          insecureTls: true
   - stage: CollectBUildInfo
     jobs:
     - job: collectInfo
@@ -40,8 +58,10 @@ stages:
       steps:
       - task: CopyFiles@2
         inputs:
-          SourceFolder: '$(agent.builddirectory)'
-          Contents: 'CreateMYSQLDB.sql'
+          SourceFolder: '$(Build.SourcesDirectory)'
+          Contents: |
+            **/target/*.war
+            **/*.sql
           TargetFolder: '$(build.artifactstagingdirectory)'
       - task: PublishBuildArtifacts@1
         inputs:
