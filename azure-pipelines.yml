@@ -14,19 +14,19 @@ stages:
     jobs:
     - job: BuildMaven
       steps:
-      - task: JFrogMaven@1
+      - task: Maven@3
         inputs:
           mavenPomFile: 'pom.xml'
-          goals: 'install'
-          artifactoryResolverService: 'artifactory'
-          targetResolveReleaseRepo: 'libs-release'
-          targetResolveSnapshotRepo: 'libs-snapshot'
-          artifactoryDeployService: 'artifactory'
-          targetDeployReleaseRepo: 'libs-snapshot-local'
-          targetDeploySnapshotRepo: 'libs-snapshot-local'
-          collectBuildInfo: true
-          buildName: '$(Build.DefinitionName)'
-          buildNumber: '$(Build.BuildNumber)'
+          publishJUnitResults: true
+          testResultsFiles: '**/surefire-reports/TEST-*.xml'
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.8'
+          mavenVersionOption: 'Default'
+          mavenOptions: '-Xmx3027m'
+          mavenAuthenticateFeed: false
+          effectivePomSkip: false
+          sonarQubeRunAnalysis: false
+      
   - stage: CollectBUildInfo
     jobs:
     - job: collectInfo
