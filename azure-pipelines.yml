@@ -35,7 +35,7 @@ stages:
             {
               "files": [
                 {
-                  "pattern": "$(Build.SourcesDirectory)/target/*.war",
+                  "pattern": "$(Build.SourcesDirectory)/target/*.war", $(Build.SourcesDirectory)/CreateMYSQLDB.sql",
                   "target": "libs-snapshot-local"
                 }
               ]
@@ -45,17 +45,12 @@ stages:
           buildNumber: '$(Build.BuildNumber)'
           failNoOp: true
           insecureTls: true
-  - stage: CollectBUildInfo
-    jobs:
-    - job: collectInfo
-      steps:
       - task: JFrogPublishBuildInfo@1
         inputs:
           artifactoryConnection: 'artifactory'
           buildName: '$(Build.DefinitionName)'
           buildNumber: '$(Build.BuildNumber)'
-    - job: CopyandPublishsql
-      steps:
+
       - task: CopyFiles@2
         inputs:
           SourceFolder: '$(Build.SourcesDirectory)'
